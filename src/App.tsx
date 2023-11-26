@@ -141,3 +141,7 @@ const App = () => {
 };
 
 export default App;
+
+// TODO:
+// 1. React/TS UI - DONE 
+// 2. Backend - TODO:
