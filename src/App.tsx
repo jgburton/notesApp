@@ -101,7 +101,7 @@ const App = () => {
           onChange={(e) => setContent(e.target.value)}
         />
         <button onClick={selectedNote ? handleUpdateNote : handleAddNote} type="submit">
-          Add Note
+          {selectedNote ? "Update Note" : "Add Note"}
         </button>
       </form>
       <div className="notes-grid">
