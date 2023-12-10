@@ -145,3 +145,6 @@ export default App;
 // TODO:
 // 1. React/TS UI - DONE 
 // 2. Backend - TODO:
+
+// Additional UI Work
+// 1. Using material UI, recreate the frontend of this application for a minimalist and sleek look and feel.
