@@ -26,23 +26,34 @@ const App = () => {
     fetchNotes();
   }, []);
 
-  const newNote: Note = {
-    id: notes.length + 1,
-    title: title,
-    content: content,
-  };
-
   const resetState = () => {
     setTitle("");
     setContent("");
     setSelectedNote(null);
   };
 
-  const handleAddNote = (event: React.FormEvent) => {
+  // Add Note
+  const handleAddNote = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    setNotes([newNote, ...notes]);
-    resetState();
+    try {
+      const response = await fetch("http://localhost:5001/api/notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          content,
+        }),
+      });
+      const newNote = await response.json();
+
+      setNotes([newNote, ...notes]);
+      resetState();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleSelectedNote = (note: Note) => {
@@ -51,26 +62,54 @@ const App = () => {
     setContent(note.content);
   };
 
-  const handleUpdateNote = (event: React.FormEvent) => {
+  // Update Note
+  const handleUpdateNote = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!selectedNote) {
       return;
     }
-    const updatedNote: Note = {
-      id: selectedNote.id,
-      title: title,
-      content: content,
-    };
-    const updatedNotesList = notes.map((note) =>
-      note.id === selectedNote.id ? updatedNote : note
-    );
 
-    setNotes(updatedNotesList);
-    resetState();
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/notes/${selectedNote.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title,
+            content,
+          }),
+        }
+      );
+      const updatedNote = await response.json();
+
+      const updatedNotesList = notes.map((note) =>
+        note.id === selectedNote.id ? updatedNote : note
+      );
+
+      setNotes(updatedNotesList);
+      resetState();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const deleteNote = (event: React.MouseEvent, noteId: number) => {
+  // Delete Note
+  const deleteNote = async (event: React.MouseEvent, noteId: number) => {
     event.stopPropagation();
+    try {
+      await fetch(`http://localhost:5001/api/notes/${noteId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+
     const updatedNotes = notes.filter((note) => note.id !== noteId);
     setNotes(updatedNotes);
   };
@@ -127,7 +166,7 @@ export default App;
 
 // TODO:
 // 1. React/TS UI - DONE
-// 2. Backend - TODO:
+// 2. Backend - DONE
 
 // Additional UI Work
 // 1. Using material UI, recreate the frontend of this application for a minimalist and sleek look and feel.
