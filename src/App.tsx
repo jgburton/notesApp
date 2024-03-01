@@ -1,7 +1,15 @@
 import "./App.css";
-import { useEffect, useState } from "react";
+import { FormEvent, MouseEvent, useEffect, useState } from "react";
+import NoteCard from "./components/NoteCard";
+import {
+  Button,
+  ButtonType,
+  ShapeType,
+  SizeType,
+  TextField,
+} from "@zebra-fed/zds-react";
 
-interface Note {
+export interface Note {
   id: number;
   title: string;
   content: string;
@@ -9,8 +17,8 @@ interface Note {
 
 const App = () => {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState<string | number>("");
+  const [content, setContent] = useState<string | number>("");
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   useEffect(() => {
@@ -115,58 +123,65 @@ const App = () => {
   };
 
   return (
+    <>
     <div className="app-container">
       <form className="note-form">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+        <TextField
+          onChange={(e, val) => setTitle(val)}
           placeholder="Title"
-          required
-        ></input>
-        <textarea
-          placeholder="Content"
-          rows={10}
-          required
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          shape={ShapeType.Rounded}
+          size={SizeType.Medium}
+          value={title}
         />
+        <TextField
+          elementType="textare"
+          enableNewLine
+          onChange={(e, val) => setContent(val)}
+          placeholder="Content"
+          shape={ShapeType.Rounded}
+          size={SizeType.Medium}
+          value={content}
+        />
+
         {selectedNote ? (
           <div className="edit-buttons">
-            <button onClick={handleUpdateNote} type="submit">
-              Save
-            </button>
-            <button onClick={resetState}>Cancel</button>
+            <Button
+              type={ButtonType.Basic}
+              size={SizeType.Medium}
+              rounded={true}
+              onClick={handleUpdateNote as any}
+              children={"Save"}
+            />
+            <Button
+              type={ButtonType.Negative}
+              size={SizeType.Medium}
+              rounded={true}
+              onClick={resetState}
+              children={"Cancel"}
+            />
           </div>
         ) : (
-          <button onClick={handleAddNote} type="submit">
-            Add Note
-          </button>
+          <Button
+            type={ButtonType.Primary}
+            size={SizeType.Medium}
+            rounded={true}
+            onClick={handleAddNote as any}
+            children={"Add Note"}
+          />
         )}
       </form>
       <div className="notes-grid">
         {notes.map((note) => (
-          <div
-            onClick={() => handleSelectedNote(note)}
-            key={note.id}
-            className="note-item"
-          >
-            <div className="notes-header">
-              <button onClick={(event) => deleteNote(event, note.id)}>x</button>
-            </div>
-            <h2>{note.title}</h2>
-            <p>{note.content}</p>
-          </div>
+          <NoteCard
+            note={note}
+            handleSelectedNote={handleSelectedNote}
+            deleteNote={deleteNote}
+          />
         ))}
       </div>
     </div>
+    </>
   );
 };
 
 export default App;
-
-// TODO:
-// 1. React/TS UI - DONE
-// 2. Backend - DONE
-
-// Additional UI Work
-// 1. Using material UI, recreate the frontend of this application for a minimalist and sleek look and feel.
